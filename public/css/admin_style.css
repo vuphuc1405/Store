@@ -1,0 +1,103 @@
+/* mystore/public/css/new_admin_style.css */
+:root {
+    --admin-bg-light: #f8f9fa; /* Nền chính */
+    --admin-sidebar-bg: #ffffff; /* Nền sidebar */
+    --admin-text-dark: #343a40;
+    --admin-text-muted: #6c757d;
+    --admin-primary-color: #5d5fef;
+    --admin-primary-light: #eef2ff;
+    --sidebar-width: 260px;
+}
+
+body {
+    background-color: var(--admin-bg-light);
+    font-family: 'Manrope', sans-serif; /* Sử dụng font từ trang khách hàng cho đồng bộ */
+}
+
+#layoutSidenav {
+    display: flex;
+}
+
+/* --- Sidebar --- */
+#layoutSidenav_nav {
+    width: var(--sidebar-width);
+    background-color: var(--admin-sidebar-bg);
+    box-shadow: 0 0 2rem 0 rgba(0,0,0,.05);
+    transition: all 0.2s ease-in-out;
+}
+
+.sidebar-brand {
+    font-size: 1.5rem;
+    font-weight: 800;
+    padding: 1.5rem;
+    color: var(--admin-text-dark);
+    text-decoration: none;
+    display: block;
+}
+
+.sb-sidenav-menu {
+    padding: 0 1rem;
+}
+
+.sb-sidenav-menu .nav .nav-link {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    color: var(--admin-text-muted);
+    padding: 0.9rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.sb-sidenav-menu .nav .nav-link .sb-nav-link-icon {
+    font-size: 1.1rem;
+    margin-right: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.sb-sidenav-menu .nav .nav-link:hover {
+    color: var(--admin-primary-color);
+}
+
+.sb-sidenav-menu .nav .nav-link.active {
+    background-color: var(--admin-primary-light);
+    color: var(--admin-primary-color);
+}
+
+/* --- Content Area --- */
+#layoutSidenav_content {
+    width: calc(100% - var(--sidebar-width));
+    transition: all 0.2s ease-in-out;
+}
+
+.admin-header {
+    background-color: #fff;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 2rem;
+}
+
+main .container-fluid {
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+/* --- Card styles for content --- */
+.card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 0 1.5rem rgba(0,0,0,.05);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 1.25rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
