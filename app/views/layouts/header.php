@@ -27,10 +27,13 @@
                             <a class="nav-link" href="/mystore/products">Sản phẩm</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Giới thiệu</a>
+                            <a class="nav-link" href="/mystore/about">Giới thiệu</a>
                         </li>
                          <li class="nav-item">
-                            <a class="nav-link" href="#">Liên hệ</a>
+                            <a class="nav-link" href="/mystore/contact">Liên hệ</a>
+                        </li>
+                         <li class="nav-item">
+                            <a class="nav-link" href="/mystore/warranty">Bảo Hành</a>
                         </li>
                     </ul>
                     <div class="header-actions d-flex align-items-center">
@@ -39,7 +42,7 @@
                             <button class="btn" type="submit"><i class="fas fa-search"></i></button>
                         </form>
                         
-                        <a href="/mystore/cart" class="header-icon position-relative">
+                        <a href="/mystore/cart" class="header-icon position-relative ms-10">
                             <i class="fas fa-shopping-cart"></i>
                             <span id="cart-item-count-badge" 
                                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
@@ -50,23 +53,31 @@
                         
                          <?php if(isset($_SESSION['user_id'])): ?>
                             <div class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle header-icon" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-user"></i>
+                                <a class="nav-link dropdown-toggle header-icon d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user me-1"></i>
+                                    <span class="ms-2"><?php echo htmlspecialchars($_SESSION['username'] ?? $_SESSION['username']); ?></span>
                                 </a>
+                               
                                 <ul class="dropdown-menu dropdown-menu-end">
-                                     <li><span class="dropdown-item-text">Chào, <strong><?php echo htmlspecialchars($_SESSION['customer_name'] ?? $_SESSION['username']); ?></strong>!</span></li>
+                                    <li>
+                                        <span class="dropdown-item-text w-100 text-center">
+                                            <strong><?php echo htmlspecialchars($_SESSION['customer_name'] ?? $_SESSION['username']); ?></strong>
+                                        </span>
+                                    </li>
                                      <li><hr class="dropdown-divider"></li>
                                     <?php if($_SESSION['role'] === 'Admin'): ?>
                                         <li><a class="dropdown-item" href="/mystore/admin">Trang quản trị</a></li>
                                     <?php endif; ?>
-                                    <li><a class="dropdown-item" href="/mystore/profile">Thông tin cá nhân</a></li>
-                                    <li><a class="dropdown-item" href="/mystore/orders">Đơn hàng của tôi</a></li>
+                                    <li><a class="dropdown-item" href="/mystore/profile">Quản lý tài khoản</a></li>
+                                    <li><a class="dropdown-item" href="/mystore/orders">Lịch sử đơn hàng</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="/mystore/logout">Đăng xuất</a></li>
                                 </ul>
                             </div>
-                        <?php else: ?>
-                            <a href="/mystore/login" class="header-icon"><i class="fas fa-user"></i> </a>
+                       <?php else: ?>
+                            <a href="/mystore/login" class="btn btn-primary btn-sm ms-2">
+                                <i class="fas fa-right-to-bracket me-1"></i> Đăng nhập
+                            </a>
                         <?php endif; ?>
                     </div>
                 </div>

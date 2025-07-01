@@ -3,28 +3,58 @@ class ProductController extends Controller {
     public function index() {
         $productModel = $this->loadModel('Product');
         $categoryModel = $this->loadModel('Category');
-        
-        $search = isset($_GET['search']) ? $_GET['search'] : '';
+        $reviewModel = $this->loadModel('Review'); // Thêm dòng này
+
+        $productsPerPage = 8;
+        $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        if ($currentPage < 1) {
+            $currentPage = 1;
+        }
+        $offset = ($currentPage - 1) * $productsPerPage;
+
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
         
         if ($search) {
-            $products = $productModel->search($search);
+            $totalProducts = $productModel->countBySearch($search);
+            $products = $productModel->search($search, $productsPerPage, $offset);
         } else {
-            $products = $productModel->getWithCategory();
+            $totalProducts = $productModel->countAll();
+            $products = $productModel->getWithCategory($productsPerPage, $offset);
         }
         
+        // === BẮT ĐẦU THÊM LOGIC LẤY ĐÁNH GIÁ ===
+        if (!empty($products)) {
+            $productIds = array_column($products, 'productId');
+            $ratings = $reviewModel->getAverageRatingsForProducts($productIds);
+
+            foreach ($products as &$product) {
+                if (isset($ratings[$product['productId']])) {
+                    $product['rating_info'] = $ratings[$product['productId']];
+                } else {
+                    $product['rating_info'] = ['avg_rating' => 0, 'review_count' => 0];
+                }
+            }
+            unset($product);
+        }
+        // === KẾT THÚC LOGIC LẤY ĐÁNH GIÁ ===
+        
+        $totalPages = ceil($totalProducts / $productsPerPage);
         $categories = $categoryModel->getAll();
         
         $data = [
             'title' => 'Danh sách sản phẩm',
             'products' => $products,
             'categories' => $categories,
-            'search' => $search
+            'search' => $search,
+            'currentPage' => $currentPage,
+            'totalPages' => $totalPages
         ];
         
         $this->loadView('products/index', $data);
     }
 
      public function detail() {
+        // ... (phần này không đổi) ...
         $id = isset($_GET['id']) ? $_GET['id'] : 0;
         
         if (!$id) {
@@ -33,7 +63,8 @@ class ProductController extends Controller {
         }
         
         $productModel = $this->loadModel('Product');
-        $product = $productModel->getByIdWithCategory($id);
+        $product = $productModel->getByIdWithDetails($id);
+
         
         if (!$product) {
             $this->redirect('/mystore/products');
@@ -60,8 +91,8 @@ class ProductController extends Controller {
         $this->loadView('products/detail', $data);
     }
 
-    public function category() {
-        $categoryId = isset($_GET['id']) ? $_GET['id'] : 0;
+   public function category() {
+        $categoryId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
         
         if (!$categoryId) {
             $this->redirect('/mystore/products');
@@ -70,24 +101,52 @@ class ProductController extends Controller {
         
         $productModel = $this->loadModel('Product');
         $categoryModel = $this->loadModel('Category');
+        $reviewModel = $this->loadModel('Review'); // Thêm dòng này
         
         $category = $categoryModel->getById($categoryId);
         if (!$category) {
             $this->redirect('/mystore/products');
             return;
         }
+
+        $productsPerPage = 8;
+        $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        if ($currentPage < 1) {
+            $currentPage = 1;
+        }
+        $offset = ($currentPage - 1) * $productsPerPage;
         
-        $products = $productModel->getByCategory($categoryId);
+        $totalProducts = $productModel->countByCategory($categoryId);
+        $products = $productModel->getByCategory($categoryId, $productsPerPage, $offset);
+        
+        // === BẮT ĐẦU THÊM LOGIC LẤY ĐÁNH GIÁ ===
+        if (!empty($products)) {
+            $productIds = array_column($products, 'productId');
+            $ratings = $reviewModel->getAverageRatingsForProducts($productIds);
+
+            foreach ($products as &$product) {
+                if (isset($ratings[$product['productId']])) {
+                    $product['rating_info'] = $ratings[$product['productId']];
+                } else {
+                    $product['rating_info'] = ['avg_rating' => 0, 'review_count' => 0];
+                }
+            }
+            unset($product);
+        }
+        // === KẾT THÚC LOGIC LẤY ĐÁNH GIÁ ===
+        
+        $totalPages = ceil($totalProducts / $productsPerPage);
         $categories = $categoryModel->getAll();
         
         $data = [
             'title' => 'Danh mục: ' . $category['name'],
             'products' => $products,
             'categories' => $categories,
-            'currentCategory' => $category
+            'currentCategory' => $category,
+            'currentPage' => $currentPage,
+            'totalPages' => $totalPages
         ];
         
-        $this->loadView('products/category', $data);
+        $this->loadView('products/index', $data);
     }
-    
 }

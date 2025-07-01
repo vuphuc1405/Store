@@ -18,7 +18,7 @@
         <div id="layoutSidenav">
 <div id="layoutSidenav_nav">
     <nav class="sb-sidenav" id="sidenavAccordion">
-        <a class="sidebar-brand" href="/mystore/admin">
+        <a class="sidebar-brand" href="/mystore/home">
             <img src="/mystore/public/images/logo.svg" alt="Logo">
         </a>
         <div class="sb-sidenav-menu">
@@ -47,6 +47,10 @@
                 <a class="nav-link" href="/mystore/admin/users">
                     <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
                     Người dùng
+                </a>
+                <a class="nav-link" href="/mystore/admin/reports/sales">
+                    <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
+                    Báo cáo doanh thu
                 </a>
             </div>
         </div>

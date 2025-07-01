@@ -15,6 +15,9 @@
                 <div class="star-rating mb-3">
                     <?php
                     $avg_rating = round($ratingInfo['avg_rating'] ?? 0);
+                    if (empty($ratingInfo['review_count'])) {
+                        $avg_rating = 5; 
+                    }
                     for ($i = 1; $i <= 5; $i++) {
                         echo '<i class="fa-star ' . ($i <= $avg_rating ? 'fas' : 'far') . '"></i>';
                     }
@@ -23,18 +26,16 @@
                 </div>
 
                 <p class="product-price mb-4"><?php echo number_format($product['price'], 0, ',', '.'); ?>đ</p>
-
-                <p class="lead"><?php echo nl2br(htmlspecialchars($product['description'])); ?></p>
                 
                 <form id="addToCartForm" class="mt-4">
                     <input type="hidden" name="product_id" value="<?php echo $product['productId']; ?>">
                     <div class="row align-items-center g-3">
-                        <div class="col-md-4">
-                             <label for="quantity" class="form-label">Số lượng:</label>
-                             <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" max="<?php echo htmlspecialchars($product['stock_quantity']); ?>">
+                        <div class="col-auto">
+                            <label for="quantity" class="form-label mb-0 me-2">Số lượng:</label>
+                            <input type="number" class="form-control d-inline-block" style="width: 90px;" id="quantity" name="quantity" value="1" min="1" max="<?php echo htmlspecialchars($product['stock_quantity']); ?>">
                         </div>
-                        <div class="col-md-8">
-                             <p class="text-muted mb-0">Còn lại: <?php echo htmlspecialchars($product['stock_quantity']); ?> sản phẩm</p>
+                        <div class="col-auto">
+                            <p class="text-muted mb-0 ms-2">Còn lại: <?php echo htmlspecialchars($product['stock_quantity']); ?> sản phẩm</p>
                         </div>
                     </div>
                     <div class="d-flex gap-2 mt-4">
@@ -50,6 +51,30 @@
             </div>
         </div>
     </div>
+
+    <div class="row mt-5">
+    <div class="col-12">
+        <div class="product-specs-box">
+    <h4 class="mb-3">Thông số kỹ thuật</h4>
+    <table class="table table-specs">
+        <tbody>
+            <?php if (isset($product['attributes']) && !empty($product['attributes'])): ?>
+                <?php foreach ($product['attributes'] as $spec): ?>
+                <tr>
+                    <td class="spec-title"><?php echo htmlspecialchars($spec['name']); ?></td>
+                    <td class="spec-content"><?php echo nl2br(htmlspecialchars($spec['value'])); ?></td>
+                </tr>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="2">Chưa có thông số kỹ thuật chi tiết cho sản phẩm này.</td>
+                </tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>
+    </div>
+</div>
 
     <div class="row mt-5 pt-5 border-top">
         <div class="col-lg-7">
@@ -98,26 +123,34 @@
                         </div>
                         <div class="ms-3 w-100">
                             <div class="review-content">
-                                <div class="d-flex justify-content-between">
-                                    <h5 class="mt-0 mb-1"><?php echo htmlspecialchars($review['customer_name']); ?></h5>
-                                    <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $review['userId']): ?>
-                                        <button class="btn btn-sm btn-outline-secondary btn-edit-review" data-review-id="<?php echo $review['reviewId']; ?>">
-                                            <i class="fas fa-pencil-alt"></i> Sửa
-                                        </button>
-                                    <?php endif; ?>
-                                </div>
+                                <h5 class="mt-0 mb-1"><?php echo htmlspecialchars($review['customer_name']); ?></h5>
                                 <div class="star-rating mb-2">
                                     <?php for ($i = 1; $i <= 5; $i++): ?>
                                         <i class="fa-star <?php echo $i <= $review['rating'] ? 'fas' : 'far'; ?>"></i>
                                     <?php endfor; ?>
                                 </div>
-                                <p><?php echo nl2br(htmlspecialchars($review['comment'])); ?></p>
+                                <p class="mb-2"><?php echo nl2br(htmlspecialchars($review['comment'])); ?></p>
                                 <small class="text-muted">
                                     <?php echo date('d/m/Y', strtotime($review['createdAt'])); ?>
                                     <?php if (!empty($review['updatedAt'])): ?>
                                         (đã chỉnh sửa)
                                     <?php endif; ?>
                                 </small>
+
+                                <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $review['userId']): ?>
+                                    <div class="mt-2">
+                                        <button class="btn btn-sm btn-outline-secondary btn-edit-review me-2" data-review-id="<?php echo $review['reviewId']; ?>">
+                                            <i class="fas fa-pencil-alt"></i> Sửa
+                                        </button>
+                                        <form action="/mystore/reviews/delete" method="POST" class="d-inline">
+                                            <input type="hidden" name="reviewId" value="<?php echo $review['reviewId']; ?>">
+                                            <input type="hidden" name="productId" value="<?php echo $product['productId']; ?>">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa bình luận này không?');">
+                                                <i class="fas fa-trash"></i> Xóa
+                                            </button>
+                                        </form>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                             
                             <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $review['userId']): ?>

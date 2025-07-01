@@ -1,13 +1,4 @@
 <?php include 'app/views/layouts/header.php'; ?>
-<?php 
-$statusTranslations = [
-    'Pending' => 'Chờ xử lý',
-    'Processing' => 'Đang xử lý',
-    'Shipped' => 'Đang giao hàng',
-    'Delivered' => 'Đã giao',
-    'Cancelled' => 'Đã hủy'
-];
-?>
 
 <div class="container section-padding">
     <h1 class="section-title">Đơn hàng của tôi</h1>
@@ -40,11 +31,8 @@ $statusTranslations = [
                                     <td><?php echo date('d/m/Y H:i', strtotime($order['orderDate'])); ?></td>
                                     <td><?php echo number_format($order['totalAmount'], 0, ',', '.'); ?>đ</td>
                                     <td>
-                                        <span class="badge status-badge status-<?php echo strtolower(htmlspecialchars($order['status'])); ?>">
-                                            <?php 
-                                                $statusKey = htmlspecialchars($order['status']);
-                                                echo $statusTranslations[$statusKey] ?? $statusKey; 
-                                            ?>                                        
+                                        <span class="badge status-badge status-<?php echo strtolower(str_replace(' ', '-', htmlspecialchars($order['status']))); ?>">
+                                            <?php echo htmlspecialchars($order['status']); ?>                                        
                                         </span>
                                     </td>
                                     <td class="text-end">

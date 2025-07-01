@@ -10,24 +10,23 @@
                 <div class="col-lg-2 offset-lg-1 col-md-4">
                     <h5>Công ty</h5>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#">Về chúng tôi</a></li>
-                        <li class="mb-2"><a href="#">Sản phẩm</a></li>
-                        <li class="mb-2"><a href="#">Tuyển dụng</a></li>
+                        <li class="mb-2"><a href="/mystore/about">Về chúng tôi</a></li>
+                        <li class="mb-2"><a href="/mystore/products">Sản phẩm</a></li>
                     </ul>
                 </div>
-                <div class="col-lg-2 col-md-4">
+               <div class="col-lg-2 col-md-4">
                     <h5>Hỗ trợ</h5>
-                     <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#">FAQ</a></li>
-                        <li class="mb-2"><a href="#">Chính sách</a></li>
-                        <li class="mb-2"><a href="#">Liên hệ</a></li>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="/mystore/warranty">Chính sách bảo hành</a></li>
+                        <li class="mb-2"><a href="/mystore/contact">Liên hệ</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-4">
                     <h5>Liên hệ</h5>
                     <p>
                         info@hpstore.com <br>
-                        123 Đường ABC, Quận XYZ, TP.HCM
+                        123 Đường ABC, Quận XYZ, Hà Nội <br>
+                        <strong>Điện thoại:</strong> +84 123 456 789
                     </p>
                 </div>
             </div>

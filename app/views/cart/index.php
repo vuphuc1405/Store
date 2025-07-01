@@ -72,9 +72,14 @@
                         <span>Tổng cộng</span>
                         <span><?php echo number_format($total, 0, ',', '.'); ?>đ</span>
                     </div>
-                    <div class="d-grid mt-4">
-                         <div class="d-grid mt-4">
-                            <a href="/mystore/checkout" class="btn btn-primary btn-lg w-100">Tiến hành Thanh toán</a>
+                   <div class="d-grid mt-4">
+                        <div class="d-flex gap-3 mt-4 justify-content-center">
+                            <a href="/mystore/checkout" class="btn btn-primary btn-lg w-100 d-flex align-items-center justify-content-center">
+                                Thanh toán
+                            </a>
+                            <a href="/mystore/home" class="btn btn-dark btn-lg w-100 d-flex align-items-center justify-content-center">
+                                Tiếp tục mua sắm
+                            </a>
                         </div>
                     </div>
                 </div>

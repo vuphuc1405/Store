@@ -1,7 +1,9 @@
 /* mystore/public/css/new_admin_style.css */
 :root {
-    --admin-bg-light: #f8f9fa; /* Nền chính */
-    --admin-sidebar-bg: #ffffff; /* Nền sidebar */
+    --admin-bg-light: #f8f9fa;
+    /* Nền chính */
+    --admin-sidebar-bg: #ffffff;
+    /* Nền sidebar */
     --admin-text-dark: #343a40;
     --admin-text-muted: #6c757d;
     --admin-primary-color: #5d5fef;
@@ -11,7 +13,8 @@
 
 body {
     background-color: var(--admin-bg-light);
-    font-family: 'Manrope', sans-serif; /* Sử dụng font từ trang khách hàng cho đồng bộ */
+    font-family: 'Manrope', sans-serif;
+    /* Sử dụng font từ trang khách hàng cho đồng bộ */
 }
 
 #layoutSidenav {
@@ -22,7 +25,7 @@ body {
 #layoutSidenav_nav {
     width: var(--sidebar-width);
     background-color: var(--admin-sidebar-bg);
-    box-shadow: 0 0 2rem 0 rgba(0,0,0,.05);
+    box-shadow: 0 0 2rem 0 rgba(0, 0, 0, .05);
     transition: all 0.2s ease-in-out;
 }
 
@@ -87,7 +90,7 @@ main .container-fluid {
 .card {
     border: none;
     border-radius: 0.75rem;
-    box-shadow: 0 0 1.5rem rgba(0,0,0,.05);
+    box-shadow: 0 0 1.5rem rgba(0, 0, 0, .05);
 }
 
 .card-header {
@@ -100,4 +103,35 @@ main .container-fluid {
 
 .card-body {
     padding: 1.5rem;
+}
+
+.table-products {
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+
+.table-products th,
+.table-products td {
+    vertical-align: middle !important;
+}
+
+.table-products thead th {
+    white-space: nowrap;
+}
+
+.table-products td img {
+    max-width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+
+/* Ghi đè để đảm bảo các class căn chỉnh của bootstrap hoạt động */
+.table-products .text-end {
+    text-align: right !important;
+}
+
+.table-products .text-center {
+    text-align: center !important;
 }

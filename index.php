@@ -40,6 +40,7 @@ $router->addRoute('GET', '/admin/products/edit', 'AdminController', 'editProduct
 $router->addRoute('POST', '/admin/products/update', 'AdminController', 'updateProduct');
 $router->addRoute('GET', '/admin/products/delete', 'AdminController', 'deleteProduct');
 $router->addRoute('GET', '/admin/orders/detail', 'AdminController', 'orderDetail');
+$router->addRoute('GET', '/admin/reports/sales', 'AdminController', 'salesReport');
 
 $router->addRoute('GET', '/profile', 'ProfileController', 'index');
 $router->addRoute('POST', '/profile/update', 'ProfileController', 'update');
@@ -50,6 +51,8 @@ $router->addRoute('POST', '/create-buy-now-order', 'OrderController', 'createBuy
 
 $router->addRoute('POST', '/reviews/create', 'ReviewController', 'create');
 $router->addRoute('POST', '/reviews/update', 'ReviewController', 'update');
+$router->addRoute('POST', '/reviews/delete', 'ReviewController', 'delete');
+
 $router->addRoute('GET', '/admin/categories', 'AdminController', 'categories');
 $router->addRoute('GET', '/admin/categories/add', 'AdminController', 'addCategory');
 $router->addRoute('POST', '/admin/categories/store', 'AdminController', 'storeCategory');
@@ -63,4 +66,8 @@ $router->addRoute('POST', '/admin/brands/store', 'AdminController', 'storeBrand'
 $router->addRoute('GET', '/admin/brands/edit', 'AdminController', 'editBrand');
 $router->addRoute('POST', '/admin/brands/update', 'AdminController', 'updateBrand');
 $router->addRoute('GET', '/admin/brands/delete', 'AdminController', 'deleteBrand');
+
+$router->addRoute('GET', '/about', 'PageController', 'about');
+$router->addRoute('GET', '/contact', 'PageController', 'contact');
+$router->addRoute('GET', '/warranty', 'PageController', 'warranty');
 $router->dispatch();

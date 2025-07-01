@@ -2,7 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root {
-    --primary-color: #FF7F50; /* Coral/Orange from the design */
+    --primary-color: #FF7F50;
+    /* Coral/Orange from the design */
     --secondary-color: #F8F9FA;
     --text-color: #343a40;
     --text-muted-color: #6c757d;
@@ -36,23 +37,29 @@ body {
     padding-bottom: 1rem;
     border-bottom: 1px solid #EAEAEA;
 }
+
 .navbar-brand {
     font-weight: 800;
     font-size: 1.5rem;
 }
+
 .navbar .nav-link {
     font-weight: 600;
     color: var(--text-color);
     margin: 0 10px;
 }
-.navbar .nav-link:hover, .navbar .nav-link.active {
+
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
     color: var(--primary-color);
 }
+
 .navbar .header-actions a {
     color: var(--text-color);
     font-size: 1.2rem;
     margin-left: 15px;
 }
+
 .navbar .header-actions a:hover {
     color: var(--primary-color);
 }
@@ -61,7 +68,7 @@ body {
 /* --- Buttons --- */
 .btn {
     border-radius: 8px;
-    padding: 12px 28px;
+    padding: 8px 16px;
     font-weight: 700;
     font-size: 1rem;
     transition: all 0.3s ease;
@@ -72,15 +79,17 @@ body {
     border-color: var(--primary-color);
     color: #fff;
 }
+
 .btn-primary:hover {
     background-color: #E56A3A;
     border-color: #E56A3A;
-    transform: translateY(-2px);
 }
+
 .btn-outline-secondary {
-    border-color: var(--border-color);
+    border-color: 2px solid var(--text-color);
     color: var(--text-color);
 }
+
 .btn-outline-secondary:hover {
     background-color: var(--text-color);
     color: #fff;
@@ -92,10 +101,12 @@ body {
     background-color: var(--light-gray-bg);
     padding: 100px 0;
 }
+
 .hero-section h1 {
     font-size: 3.5rem;
     font-weight: 800;
 }
+
 .hero-section p {
     font-size: 1.2rem;
     max-width: 500px;
@@ -112,31 +123,41 @@ body {
     text-align: center;
     height: 100%;
 }
+
 .product-card:hover {
-    transform: translateY(-5px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
 }
+
 .product-card-img {
-    background-color: var(--light-gray-bg);
-    padding: 20px;
+    height: 220px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
 .product-card-img img {
-    max-height: 200px;
+    max-height: 100%;
+    max-width: 100%;
     width: auto;
     object-fit: contain;
 }
+
 .product-card-body {
     padding: 20px;
 }
+
 .product-card-title {
     font-size: 1.1rem;
     font-weight: 700;
     margin-bottom: 10px;
 }
+
 .product-card-rating {
     color: #FFC107;
     margin-bottom: 10px;
 }
+
 .product-card-price {
     font-size: 1.25rem;
     font-weight: 700;
@@ -150,23 +171,27 @@ body {
     overflow: hidden;
     color: white;
 }
+
 .feature-card img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.4s ease;
 }
+
 .feature-card:hover img {
     transform: scale(1.05);
 }
+
 .feature-card-content {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
     padding: 30px;
-    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
 }
+
 .feature-card-content h3 {
     font-weight: 700;
 }
@@ -177,6 +202,7 @@ body {
     border-radius: 15px;
     padding: 60px;
 }
+
 .cta-banner h2 {
     font-weight: 800;
 }
@@ -195,25 +221,30 @@ body {
     padding: 60px 0 20px;
     color: var(--text-muted-color);
 }
+
 .footer .footer-brand {
     font-weight: 800;
     font-size: 1.5rem;
     color: var(--text-color);
 }
+
 .footer h5 {
     font-weight: 700;
     font-size: 1.1rem;
     color: var(--text-color);
     margin-bottom: 20px;
 }
+
 .footer .list-unstyled li a {
     color: var(--text-muted-color);
     text-decoration: none;
     transition: color 0.3s ease;
 }
+
 .footer .list-unstyled li a:hover {
     color: var(--primary-color);
 }
+
 .footer .footer-bottom {
     border-top: 1px solid #EAEAEA;
     padding-top: 20px;
@@ -222,10 +253,11 @@ body {
 
 /* --- Product Detail Page --- */
 .product-detail-img {
+    outline: 1px solid rgb(197, 193, 193);
     border-radius: 15px;
-    background-color: var(--light-gray-bg);
     padding: 30px;
 }
+
 .product-detail-info .product-price {
     font-size: 2.5rem;
     font-weight: 800;
@@ -240,6 +272,7 @@ body {
     border-radius: 8px;
     background-color: var(--light-gray-bg);
 }
+
 .cart-summary {
     background-color: var(--light-gray-bg);
     border-radius: 12px;
@@ -252,11 +285,13 @@ body {
     display: flex;
     align-items: center;
 }
+
 .auth-form-wrapper {
     max-width: 450px;
     margin: auto;
     width: 100%;
 }
+
 .auth-form-wrapper h2 {
     font-weight: 800;
 }
@@ -265,6 +300,7 @@ body {
 .header-actions .search-form {
     position: relative;
 }
+
 .header-actions .search-form .form-control {
     border-radius: 20px;
     padding-left: 20px;
@@ -272,14 +308,16 @@ body {
     background-color: var(--light-gray-bg);
     border: 1px solid #EAEAEA;
     transition: all 0.3s ease;
-    width: 200px;
+    width: 300px;
 }
+
 .header-actions .search-form .form-control:focus {
     background-color: #fff;
     border-color: var(--primary-color);
     box-shadow: none;
-    width: 250px;
+    width: 350px;
 }
+
 .header-actions .search-form .btn {
     position: absolute;
     top: 0;
@@ -290,91 +328,272 @@ body {
     background: transparent;
     padding: 0 12px;
 }
+
 .header-actions .search-form .btn:hover {
     color: var(--primary-color);
 }
+
 .header-actions .header-icon {
     color: var(--text-color);
     font-size: 1.2rem;
     margin-left: 18px;
     text-decoration: none;
 }
-.header-actions .header-icon:hover, .header-actions .dropdown-toggle:hover {
+
+.header-actions .header-icon:hover,
+.header-actions .dropdown-toggle:hover {
     color: var(--primary-color);
 }
+
 .navbar-nav .dropdown-toggle::after {
-    display: none; /* Ẩn mũi tên mặc định của dropdown */
+    display: none;
+    /* Ẩn mũi tên mặc định của dropdown */
 }
-.product-card .btn-add-to-cart {
-    border-color: var(--border-color);
-    color: var(--text-color);
-    font-weight: 600;
-    margin-top: 10px;
-    width: 100%;
-}
-.product-card .btn-add-to-cart:hover {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: #fff;
-}
-/* --- Order Status Badges --- */
+
+
 .status-badge {
     padding: 0.4em 0.75em;
     font-size: 0.8rem;
     font-weight: 700;
-    border-radius: 50rem; /* Bo tròn như viên thuốc */
+    border-radius: 50rem;
+    /* Bo tròn như viên thuốc */
     letter-spacing: 0.5px;
     text-transform: capitalize;
 }
 
-.status-pending {
-    color: #0a58ca; /* Chữ màu xanh đậm */
-    background-color: #cfe2ff; /* Nền màu xanh nhạt */
+.status-chờ-xử-lý {
+    color: #0a58ca;
+    /* Chữ màu xanh đậm */
+    background-color: #cfe2ff;
+    /* Nền màu xanh nhạt */
 }
-.status-processing {
-    color: #664d03; /* Chữ màu vàng đậm */
-    background-color: #fff3cd; /* Nền màu vàng nhạt */
+
+.status-Đang-xử-lý {
+    color: #664d03;
+    /* Chữ màu vàng đậm */
+    background-color: #fff3cd;
+    /* Nền màu vàng nhạt */
 }
-.status-shipped {
-    color: #055160; /* Chữ màu lục lam đậm */
-    background-color: #cff4fc; /* Nền màu lục lam nhạt */
+
+.status-Đang-giao-hàng {
+    color: #055160;
+    /* Chữ màu lục lam đậm */
+    background-color: #cff4fc;
+    /* Nền màu lục lam nhạt */
 }
-.status-delivered {
-    color: #0f5132; /* Chữ màu xanh lá đậm */
-    background-color: #d1e7dd; /* Nền màu xanh lá nhạt */
+
+.status-Đã-giao {
+    color: #0f5132;
+    /* Chữ màu xanh lá đậm */
+    background-color: #d1e7dd;
+    /* Nền màu xanh lá nhạt */
 }
-.status-cancelled {
-    color: #842029; /* Chữ màu đỏ đậm */
-    background-color: #f8d7da; /* Nền màu đỏ nhạt */
+
+.status-Đã-hủy {
+    color: #842029;
+    /* Chữ màu đỏ đậm */
+    background-color: #f8d7da;
+    /* Nền màu đỏ nhạt */
 }
 
 /* --- Product Review Section --- */
-.star-rating { 
-    display: flex; 
-    align-items: center; 
-    font-size: 1.2rem; 
+.star-rating {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
 }
-.star-rating .fa-star { 
-    color: #ffc107; 
+
+.star-rating .fa-star {
+    color: #ffc107;
 }
-.star-rating .text-muted { 
-    margin-left: 0.5rem; 
+
+.star-rating .text-muted {
+    margin-left: 0.5rem;
 }
-.review-form .rating-stars { 
-    direction: rtl; 
+
+.review-form .rating-stars {
+    direction: rtl;
     display: inline-block;
 }
-.review-form .rating-stars input[type="radio"] { 
-    display: none; 
+
+.review-form .rating-stars input[type="radio"] {
+    display: none;
 }
+
 .review-form .rating-stars label {
-    font-size: 2rem; 
-    color: #ddd; 
-    cursor: pointer; 
+    font-size: 2rem;
+    color: #ddd;
+    cursor: pointer;
     transition: color 0.2s;
 }
-.review-form .rating-stars input[type="radio"]:checked ~ label,
+
+.review-form .rating-stars input[type="radio"]:checked~label,
 .review-form .rating-stars label:hover,
-.review-form .rating-stars label:hover ~ label {
+.review-form .rating-stars label:hover~label {
     color: #ffc107;
+}
+
+/* Thêm vào cuối file mystore/public/css/style.css */
+
+/* --- Tối ưu Banner Trang Chủ --- */
+.optimized-banner {
+    border-radius: 12px;
+    overflow: hidden;
+    height: 480px;
+    /* Chiều cao cố định cho banner */
+    background-color: var(--light-gray-bg);
+}
+
+.banner-slide-item {
+    position: relative;
+    width: 100%;
+    height: 480px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Lớp phủ Gradient để làm nổi bật chữ */
+.banner-slide-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.1) 100%);
+    z-index: 2;
+}
+
+.banner-image {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 3;
+    padding: 0 5%;
+    max-width: 50%;
+    /* Giới hạn chiều rộng của nội dung */
+    margin-right: auto;
+    /* Đẩy nội dung về phía bên trái */
+}
+
+.banner-title {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    /* Đổ bóng cho chữ */
+    color: #fff;
+}
+
+.banner-subtitle {
+    font-size: 1.1rem;
+    margin: 1rem 0 2rem;
+    max-width: 450px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    color: #fff;
+    opacity: 0.9;
+}
+
+.banner-button {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 12px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    border: 2px solid var(--primary-color);
+}
+
+.banner-button:hover {
+    background-color: transparent;
+    color: #fff;
+    border-color: #fff;
+    transform: translateY(-3px);
+}
+
+/* Nút điều khiển và chỉ báo của Carousel */
+.optimized-banner .carousel-indicators [data-bs-target] {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #fff;
+    opacity: 0.7;
+    border: none;
+    margin: 0 5px;
+}
+
+.optimized-banner .carousel-indicators .active {
+    opacity: 1;
+}
+
+.optimized-banner .carousel-control-prev-icon,
+.optimized-banner .carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    padding: 1.2rem;
+}
+
+.optimized-banner .carousel-control-prev,
+.optimized-banner .carousel-control-next {
+    display: none;
+}
+
+/* Sửa lỗi màu chữ trên nút .btn-primary cho thẻ <a> */
+a.btn-primary,
+a.btn-primary:hover {
+    color: #fff !important;
+}
+
+/* Tùy chỉnh riêng cho nút Đăng nhập trên header */
+.header-actions .btn {
+    font-weight: normal;
+}
+
+.product-specs-box {
+    padding-top: 30px;
+}
+
+.product-specs-box h4 {
+    font-weight: 700;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.table-specs {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.table-specs tr:not(:last-child) {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.table-specs td {
+    padding: 0.5rem 0.5rem;
+    vertical-align: middle;
+}
+
+.table-specs .spec-title {
+    font-weight: 600;
+    color: var(--text-color);
+    width: 35%;
+}
+
+.table-specs .spec-content {
+    color: var(--text-muted-color);
+    line-height: 1.6;
 }

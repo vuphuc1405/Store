@@ -1,15 +1,4 @@
-<?php 
-include 'app/views/admin/layouts/header.php'; 
-
-// Mảng dịch trạng thái
-$statusTranslations = [
-    'Pending' => 'Chờ xử lý',
-    'Processing' => 'Đang xử lý',
-    'Shipped' => 'Đang giao hàng',
-    'Delivered' => 'Đã giao',
-    'Cancelled' => 'Đã hủy'
-];
-?>
+<?php include 'app/views/admin/layouts/header.php'; ?>
 
 <div class="container-fluid px-4">
     <h1 class="mt-4">Quản lý Đơn hàng</h1>
@@ -45,12 +34,8 @@ $statusTranslations = [
                                     <td><?php echo date('d/m/Y H:i', strtotime($order['orderDate'])); ?></td>
                                     <td><?php echo number_format($order['totalAmount'] ?? 0, 0, ',', '.'); ?>đ</td>
                                     <td class="text-center">
-                                        <span class="status-badge status-<?php echo strtolower(htmlspecialchars($order['status'])); ?>">
-                                            <?php 
-                                            // Sử dụng mảng dịch để hiển thị
-                                            $statusKey = htmlspecialchars($order['status']);
-                                            echo $statusTranslations[$statusKey] ?? $statusKey; 
-                                            ?>
+                                        <span class="status-badge status-<?php echo strtolower(str_replace(' ', '-', htmlspecialchars($order['status']))); ?>">
+                                            <?php echo htmlspecialchars($order['status']); ?>
                                         </span>
                                     </td>
                                     <td class="text-end">

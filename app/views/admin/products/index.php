@@ -14,17 +14,17 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-hover align-middle table-products">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th style="width: 5%;">ID</th>
                             <th>Tên sản phẩm</th>
                             <th>Danh mục</th>
                             <th>Thương hiệu</th>
-                            <th>Giá</th>
-                            <th>Số lượng</th>
-                            <th>Hình ảnh</th>
-                            <th class="text-end">Thao tác</th>
+                            <th class="text-center">Giá</th>
+                            <th class="text-center">Số lượng</th>
+                            <th class="text-center">Hình ảnh</th>
+                            <th class="text-end" style="width: 12%;">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -34,10 +34,10 @@
                             <td><?php echo htmlspecialchars($product['name']); ?></td>
                             <td><?php echo htmlspecialchars($product['category_name'] ?? ''); ?></td>
                             <td><?php echo htmlspecialchars($product['brand_name'] ?? ''); ?></td>
-                            <td><?php echo number_format($product['price'], 0, ',', '.'); ?>đ</td>
-                            <td><?php echo htmlspecialchars($product['stock_quantity']); ?></td>
-                            <td>
-                                <img src="/mystore/public/images/products/<?php echo htmlspecialchars($product['image']); ?>" alt="" height="50">
+                            <td class="text-center"><?php echo number_format($product['price'], 0, ',', '.'); ?>đ</td>
+                            <td class="text-center"><?php echo htmlspecialchars($product['stock_quantity']); ?></td>
+                            <td class="text-center">
+                                <img src="/mystore/public/images/products/<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" height="50">
                             </td>
                             <td class="text-end">
                                 <a href="/mystore/admin/products/edit?id=<?php echo $product['productId']; ?>" class="btn btn-warning btn-sm">Sửa</a>

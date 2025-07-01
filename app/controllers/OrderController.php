@@ -1,4 +1,5 @@
 <?php
+
 class OrderController extends Controller {
     public function index() {
         if (!$this->isLoggedIn()) {
@@ -10,27 +11,33 @@ class OrderController extends Controller {
         $this->loadView('orders/index', ['title' => 'Đơn hàng của tôi', 'orders' => $orders]);
     }
 
-    public function detail() {
-        if (!$this->isLoggedIn()) {
-            $this->redirect('/mystore/login');
-            return;
-        }
-        $orderId = $_GET['id'] ?? 0;
-        if (!$orderId) {
-            $this->redirect('/mystore/orders');
-            return;
-        }
-        $orderModel = $this->loadModel('Order');
-        $order = $orderModel->getById($orderId);
-        if (!$order || $order['userId'] != $_SESSION['user_id']) {
-            $this->redirect('/mystore/orders');
-            return;
-        }
-        $order['totalAmount'] = $orderModel->getOrderSummary($orderId);
-        $orderDetails = $orderModel->getOrderDetails($orderId);
-        $this->loadView('orders/detail', ['title' => 'Chi tiết đơn hàng #' . $orderId, 'order' => $order, 'orderDetails' => $orderDetails]);
+   public function detail() {
+    $orderId = $_GET['id'] ?? null;
+    if (!$orderId) {
+        header('Location: /mystore/orders');
+        exit;
     }
-    
+
+    // FIX: Load the Order model using the loadModel method.
+    $orderModel = $this->loadModel('Order');
+    $order = $orderModel->getById($orderId);
+    $orderDetails = $orderModel->getOrderDetails($orderId);
+    $orderSummary = $orderModel->getOrderSummary($orderId); // ✅ bổ sung dòng này
+
+    if (!$order) {
+        $_SESSION['error'] = "Không tìm thấy đơn hàng.";
+        header('Location: /mystore/orders');
+        exit;
+    }
+
+    $this->loadView('orders/detail', [
+        'title' => 'Chi tiết đơn hàng',
+        'order' => $order,
+        'orderDetails' => $orderDetails,
+        'orderSummary' => $orderSummary, // ✅ truyền sang view
+    ]);
+}
+
     public function checkout() {
         if (!$this->isLoggedIn()) {
             $this->redirect('/mystore/login');
@@ -94,9 +101,6 @@ class OrderController extends Controller {
         }
     }
 
-    /**
-     * PHƯƠNG THỨC MỚI: Chuẩn bị trang thanh toán cho luồng "Mua Ngay"
-     */
     public function buyNowCheckout() {
         if (!$this->isLoggedIn()) {
             $this->redirect('/mystore/login');
@@ -109,7 +113,8 @@ class OrderController extends Controller {
         if ($quantity < 1) $quantity = 1;
 
         $productModel = $this->loadModel('Product');
-        $product = $productModel->getByIdWithCategory($productId);
+        $product = $productModel->getByIdWithDetails($productId);
+
 
         if (!$product) {
             $_SESSION['error'] = 'Sản phẩm không hợp lệ.';
@@ -166,7 +171,8 @@ class OrderController extends Controller {
         $quantity = $_POST['quantity'] ?? 1;
         
         $productModel = $this->loadModel('Product');
-        $product = $productModel->getByIdWithCategory($productId);
+       $product = $productModel->getByIdWithDetails($productId);
+
         
         if (!$product) {
              $_SESSION['error'] = 'Sản phẩm không hợp lệ.';

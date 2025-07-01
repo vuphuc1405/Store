@@ -1,127 +1,230 @@
 <?php
-class Order extends Model {
-    protected $table = 'order_base';
+
+class Order extends Model
+{
+    /* -------------------------------------------------
+       Cấu hình bảng và khóa chính
+    --------------------------------------------------*/
+    protected $table      = 'order_base';
     protected $primaryKey = 'orderId';
 
-    /**
-     * Lấy tất cả đơn hàng cho trang admin, bao gồm tổng tiền.
-     */
-    public function getAllForAdmin() {
-        $query = "SELECT ob.*, os.totalAmount 
-                  FROM order_base ob 
-                  LEFT JOIN order_summary os ON ob.orderId = os.orderId 
-                  ORDER BY ob.orderDate DESC";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function createOrder($userId, $cartItems, $addressData) {
-        // Tải model Product một lần để tái sử dụng
+    /* -------------------------------------------------
+       1) TẠO ĐƠN HÀNG MỚI
+       - Lưu shipping_info  → lấy shippingId
+       - Lưu order_base     → lấy orderId
+       - Lưu chi tiết (orderdetail_base + orderdetail_price)
+       - Trừ kho (Product::decreaseStock)
+       - Triggers trong DB tự cập nhật order_summary
+    --------------------------------------------------*/
+    public function createOrder(int $userId, array $cartItems, array $addressData)
+    {
         require_once 'app/models/Product.php';
-        $productModel = new Product(); 
+        $productModel = new Product();
 
         try {
             $this->db->beginTransaction();
-            
-            // BƯỚC 1: KIỂM TRA VÀ TRỪ KHO
+
+            /* 1. Trừ kho */
             foreach ($cartItems as $item) {
-                $stockUpdated = $productModel->decreaseStock($item['productId'], $item['quantity']);
-                if (!$stockUpdated) {
+                if (!$productModel->decreaseStock($item['productId'], $item['quantity'])) {
                     $this->db->rollBack();
-                    $product = $productModel->getById($item['productId']);
-                    $_SESSION['error'] = "Rất tiếc, sản phẩm \"" . ($product['name'] ?? 'Không xác định') . "\" không đủ số lượng tồn kho.";
+                    $_SESSION['error'] = 'Không đủ tồn kho cho sản phẩm ID: ' . $item['productId'];
                     return false;
                 }
             }
 
-            // BƯỚC 2: TẠO ĐƠN HÀNG (NẾU TẤT CẢ SẢN PHẨM ĐỀU ĐỦ HÀNG)
-            $query = "INSERT INTO order_base (userId, status, customer_name, shipping_phone, shipping_address) 
-                      VALUES (:userId, :status, :customer_name, :shipping_phone, :shipping_address)";
-            
-            $stmt = $this->db->prepare($query);
-            $stmt->bindValue(':userId', $userId);
-            $stmt->bindValue(':status', 'Pending');
-            $stmt->bindValue(':customer_name', $addressData['customer_name']);
-            $stmt->bindValue(':shipping_phone', $addressData['shipping_phone']);
-            $stmt->bindValue(':shipping_address', $addressData['shipping_address']);
-            $stmt->execute();
-            
+            /* 2. Lưu shipping_info */
+            $sqlShip = "INSERT INTO shipping_info (userId, customer_name, shipping_phone, shipping_address)
+                        VALUES (:uid, :cname, :phone, :addr)";
+            $this->db->prepare($sqlShip)->execute([
+                ':uid'   => $userId,
+                ':cname' => $addressData['customer_name'],
+                ':phone' => $addressData['shipping_phone'],
+                ':addr'  => $addressData['shipping_address']
+            ]);
+            $shippingId = $this->db->lastInsertId();
+
+            /* 3. Tạo order_base */
+            $sqlOrder = "INSERT INTO order_base (userId, shippingId, status)
+                         VALUES (:uid, :shipId, :status)";
+            $this->db->prepare($sqlOrder)->execute([
+                ':uid'    => $userId,
+                ':shipId' => $shippingId,
+                ':status' => 'Chờ xử lý'
+            ]);
             $orderId = $this->db->lastInsertId();
-            $totalAmount = 0;
-            
+
+            /* 4. Lưu chi tiết đơn hàng */
+            $sqlDetail = "INSERT INTO orderdetail_base (orderId, productId, quantity)
+                          VALUES (:oid, :pid, :qty)";
+            $sqlPrice  = "INSERT INTO orderdetail_price (orderDetailId, price)
+                          VALUES (:odid, :price)";
+            $stmtDetail = $this->db->prepare($sqlDetail);
+            $stmtPrice  = $this->db->prepare($sqlPrice);
+
             foreach ($cartItems as $item) {
-                $queryDetail = "INSERT INTO orderdetail_base (orderId, productId, quantity) VALUES (:orderId, :productId, :quantity)";
-                $stmtDetail = $this->db->prepare($queryDetail);
-                $stmtDetail->bindParam(':orderId', $orderId);
-                $stmtDetail->bindParam(':productId', $item['productId']);
-                $stmtDetail->bindParam(':quantity', $item['quantity']);
-                $stmtDetail->execute();
-                
+                /* 4.1 orderdetail_base */
+                $stmtDetail->execute([
+                    ':oid' => $orderId,
+                    ':pid' => $item['productId'],
+                    ':qty' => $item['quantity']
+                ]);
                 $orderDetailId = $this->db->lastInsertId();
-                
-                $queryPrice = "INSERT INTO orderdetail_price (orderDetailId, price) VALUES (:orderDetailId, :price)";
-                $stmtPrice = $this->db->prepare($queryPrice);
-                $stmtPrice->bindParam(':orderDetailId', $orderDetailId);
-                $stmtPrice->bindParam(':price', $item['price']);
-                $stmtPrice->execute();
-                
-                $totalAmount += $item['price'] * $item['quantity'];
+
+                /* 4.2 orderdetail_price */
+                $stmtPrice->execute([
+                    ':odid' => $orderDetailId,
+                    ':price'=> $item['price']
+                ]);
             }
-            
-            $querySummary = "INSERT INTO order_summary (orderId, totalAmount) VALUES (:orderId, :totalAmount)";
-            $stmtSummary = $this->db->prepare($querySummary);
-            $stmtSummary->bindParam(':orderId', $orderId);
-            $stmtSummary->bindParam(':totalAmount', $totalAmount);
-            $stmtSummary->execute();
-            
+
+            /* 5. Commit – triggers sẽ tự ghi order_summary */
             $this->db->commit();
             return $orderId;
-            
+
         } catch (Exception $e) {
-            $this->db->rollback();
-            error_log($e->getMessage());
+            $this->db->rollBack();
+            $_SESSION['sql_error'] = $e->getMessage();
             return false;
         }
     }
-    public function getByUser($userId) {
-        $query = "SELECT ob.*, os.totalAmount 
-                  FROM order_base ob 
-                  LEFT JOIN order_summary os ON ob.orderId = os.orderId 
-                  WHERE ob.userId = :userId 
-                  ORDER BY ob.orderDate DESC";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':userId', $userId);
+
+    /* -------------------------------------------------
+       2) CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG
+    --------------------------------------------------*/
+    public function updateStatus(int $orderId, string $status): bool
+    {
+        $sql = "UPDATE order_base SET status = :status WHERE orderId = :oid";
+        return $this->db->prepare($sql)->execute([
+            ':status' => $status,
+            ':oid'    => $orderId
+        ]);
+    }
+
+    /* -------------------------------------------------
+       3) LẤY DANH SÁCH ĐƠN HÀNG (ADMIN)
+    --------------------------------------------------*/
+    public function getAll(): array
+    {
+        $sql = "SELECT ob.*, si.customer_name, si.shipping_phone, si.shipping_address, os.totalAmount
+                FROM order_base ob
+                JOIN shipping_info si ON ob.shippingId = si.shippingId
+                LEFT JOIN order_summary os ON ob.orderId = os.orderId
+                ORDER BY ob.orderId DESC";
+        return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /* -------------------------------------------------
+       4) LẤY ĐƠN HÀNG CỦA NGƯỜI DÙNG
+    --------------------------------------------------*/
+    public function getByUser(int $userId): array
+    {
+        $sql = "SELECT ob.*, si.customer_name, si.shipping_phone, si.shipping_address, os.totalAmount
+                FROM order_base ob
+                JOIN shipping_info si ON ob.shippingId = si.shippingId
+                LEFT JOIN order_summary os ON ob.orderId = os.orderId
+                WHERE ob.userId = :uid
+                ORDER BY ob.orderId DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':uid' => $userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /* -------------------------------------------------
+       5) LẤY CHI TIẾT ĐƠN HÀNG
+    --------------------------------------------------*/
+    public function getOrderDetails(int $orderId): array
+    {
+        $sql = "SELECT odb.*, odp.price,
+                       p.name  AS product_name,
+                       p.image AS product_image
+                FROM orderdetail_base  odb
+                JOIN orderdetail_price odp ON odb.orderDetailId = odp.orderDetailId
+                JOIN product p             ON odb.productId     = p.productId
+                WHERE odb.orderId = :oid";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':oid' => $orderId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /* -------------------------------------------------
+       6) LẤY TỔNG TIỀN ĐƠN HÀNG (order_summary)
+    --------------------------------------------------*/
+    public function getOrderSummary(int $orderId): ?array
+    {
+        $sql  = "SELECT * FROM order_summary WHERE orderId = :oid";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':oid' => $orderId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
+    /* -------------------------------------------------
+       7) LẤY DOANH THU HÀNG THÁNG CHO BÁO CÁO
+    --------------------------------------------------*/
+    public function getMonthlySales(int $year, int $month): array
+    {
+        $sql = "SELECT 
+                    p.name AS productName,
+                    SUM(odb.quantity) AS totalQuantity,
+                    SUM(odp.price * odb.quantity) AS totalRevenue
+                FROM order_base ob
+                JOIN orderdetail_base odb ON ob.orderId = odb.orderId
+                JOIN orderdetail_price odp ON odb.orderDetailId = odp.orderDetailId
+                JOIN product p ON odb.productId = p.productId
+                WHERE YEAR(ob.orderDate) = :year AND MONTH(ob.orderDate) = :month
+                AND ob.status = 'Đã giao'
+                GROUP BY p.productId, p.name
+                ORDER BY totalRevenue DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':year', $year, PDO::PARAM_INT);
+        $stmt->bindParam(':month', $month, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getOrderDetails($orderId) {
-        $query = "SELECT od.*, p.name, p.image, odp.price, (od.quantity * odp.price) as total
-                  FROM orderdetail_base od 
-                  JOIN product p ON od.productId = p.productId 
-                  LEFT JOIN orderdetail_price odp ON od.orderDetailId = odp.orderDetailId 
-                  WHERE od.orderId = :orderId";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':orderId', $orderId);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function updateStatus($orderId, $status) {
-        $query = "UPDATE order_base SET status = :status WHERE orderId = :orderId";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':status', $status);
-        $stmt->bindParam(':orderId', $orderId);
-        return $stmt->execute();
-    }
-
-    public function getOrderSummary($orderId) {
-        $query = "SELECT totalAmount FROM order_summary WHERE orderId = :orderId";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':orderId', $orderId);
+    /* -------------------------------------------------
+       8) LẤY TỔNG DOANH THU TOÀN BỘ (ADMIN DASHBOARD)
+    --------------------------------------------------*/
+   public function getTotalRevenue(): float
+    {
+        $sql = "SELECT SUM(os.totalAmount) AS grandTotalRevenue 
+                FROM order_summary os
+                JOIN order_base ob ON os.orderId = ob.orderId
+                WHERE ob.status = 'Đã giao'"; // Chỉ tính tổng các đơn hàng có trạng thái 'Đã giao'
+        $stmt = $this->db->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ? $result['totalAmount'] : 0;
+        return (float)($result['grandTotalRevenue'] ?? 0);
+    }
+
+    /* -------------------------------------------------
+       9) LẤY TẤT CẢ ĐƠN HÀNG CHO ADMIN (có totalAmount)
+    --------------------------------------------------*/
+    public function getAllForAdmin(): array
+    {
+        $sql = "SELECT ob.*, si.customer_name, si.shipping_phone, si.shipping_address, os.totalAmount
+                FROM order_base ob
+                JOIN shipping_info si ON ob.shippingId = si.shippingId
+                LEFT JOIN order_summary os ON ob.orderId = os.orderId
+                ORDER BY ob.orderId DESC";
+        $stmt = $this->db->query($sql); // Use query() for no params, or prepare/execute if params are needed
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /* -------------------------------------------------
+       10) LẤY CHI TIẾT ĐƠN HÀNG ĐẦY ĐỦ (CHO ADMIN)
+       Bao gồm order_base, shipping_info, và order_summary
+    --------------------------------------------------*/
+    public function getDetailedOrderById(int $orderId): ?array
+    {
+        $sql = "SELECT ob.*, si.customer_name, si.shipping_phone, si.shipping_address, os.totalAmount
+                FROM order_base ob
+                JOIN shipping_info si ON ob.shippingId = si.shippingId
+                LEFT JOIN order_summary os ON ob.orderId = os.orderId
+                WHERE ob.orderId = :orderId";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':orderId', $orderId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 }

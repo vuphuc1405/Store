@@ -62,9 +62,10 @@
                             </li>
                         </ul>
 
-                        <div class="d-grid mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg">Hoàn tất đặt hàng</button>
-                        </div>
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary w-100 ">Đặt hàng</button>
+                            <a href="/mystore/index" class="btn btn-dark w-100 ">Tiếp tục mua sắm</a>
+                        </div>               
                     </div>
                 </div>
             </div>

@@ -56,6 +56,23 @@
                 </div>
             </div>
         </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card card-stats h-100">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <h5 class="stats-title text-uppercase text-muted mb-2">Doanh thu</h5>
+                            <span class="stats-count font-weight-bold mb-0"><?php echo number_format($totalRevenue, 0, ',', '.'); ?>đ</span>
+                        </div>
+                        <div class="col-auto">
+                            <div class="stats-icon text-danger">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     </div>
 

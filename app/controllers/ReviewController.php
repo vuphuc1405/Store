@@ -98,4 +98,37 @@ class ReviewController extends Controller {
 
         $this->redirect('/mystore/product?id=' . $productId);
     }
+ public function delete() {
+        if (!$this->isLoggedIn()) {
+            $_SESSION['error'] = 'Vui lòng đăng nhập.';
+            $this->redirect('/mystore/login');
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/');
+            return;
+        }
+
+        $reviewId = $_POST['reviewId'] ?? 0;
+        $productId = $_POST['productId'] ?? 0; // Cần để chuyển hướng về đúng trang sản phẩm
+
+        $reviewModel = $this->loadModel('Review');
+        $review = $reviewModel->getById($reviewId);
+
+        // Bảo mật: Đảm bảo người dùng chỉ có thể xóa đánh giá của chính họ (hoặc admin)
+        if (!$review || ($review['userId'] != $_SESSION['user_id'] && $_SESSION['role'] !== 'Admin')) {
+            $_SESSION['error'] = 'Bạn không có quyền thực hiện hành động này.';
+            $this->redirect('/mystore/product?id=' . $productId);
+            return;
+        }
+
+        if ($reviewModel->delete($reviewId)) {
+            $_SESSION['success'] = 'Xóa đánh giá thành công!';
+        } else {
+            $_SESSION['error'] = 'Có lỗi xảy ra, không thể xóa đánh giá.';
+        }
+
+        $this->redirect('/mystore/product?id=' . $productId);
+    }
 }

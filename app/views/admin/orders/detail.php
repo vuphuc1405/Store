@@ -1,18 +1,4 @@
-<?php 
-include 'app/views/admin/layouts/header.php'; 
-
-// Mảng dịch trạng thái
-$statusTranslations = [
-    'Pending' => 'Chờ xử lý',
-    'Processing' => 'Đang xử lý',
-    'Shipped' => 'Đang giao hàng',
-    'Delivered' => 'Đã giao',
-    'Cancelled' => 'Đã hủy'
-];
-
-$currentStatusKey = $order['status'];
-$currentStatusDisplay = $statusTranslations[$currentStatusKey] ?? $currentStatusKey;
-?>
+<?php include 'app/views/admin/layouts/header.php'; ?>
 
 <div class="container-fluid px-4">
     <h1 class="mt-4">Chi tiết Đơn hàng #<?php echo htmlspecialchars($order['orderId']); ?></h1>
@@ -45,13 +31,13 @@ $currentStatusDisplay = $statusTranslations[$currentStatusKey] ?? $currentStatus
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <img src="/mystore/public/images/products/<?php echo htmlspecialchars($item['image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" style="width: 50px; height: 50px; object-fit: cover; margin-right: 15px;">
-                                                <span><?php echo htmlspecialchars($item['name']); ?></span>
+                                                <img src="/mystore/public/images/products/<?php echo htmlspecialchars($item['product_image']); ?>" alt="<?php echo htmlspecialchars($item['product_name']); ?>" style="width: 50px; height: 50px; object-fit: cover; margin-right: 15px;">
+                                                <span><?php echo htmlspecialchars($item['product_name']); ?></span>
                                             </div>
                                         </td>
                                         <td class="text-center align-middle"><?php echo htmlspecialchars($item['quantity']); ?></td>
                                         <td class="text-end align-middle"><?php echo number_format($item['price'], 0, ',', '.'); ?>đ</td>
-                                        <td class="text-end align-middle fw-bold"><?php echo number_format($item['total'], 0, ',', '.'); ?>đ</td>
+                                        <td class="text-end align-middle fw-bold"><?php echo number_format($item['price'] * $item['quantity'], 0, ',', '.'); ?>đ</td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -89,16 +75,19 @@ $currentStatusDisplay = $statusTranslations[$currentStatusKey] ?? $currentStatus
                 <div class="card-body">
                     <p>
                         <strong>Trạng thái hiện tại:</strong> 
-                        <span class="status-badge status-<?php echo strtolower($currentStatusKey); ?>"><?php echo $currentStatusDisplay; ?></span>
+                        <span class="status-badge status-<?php echo strtolower(str_replace(' ', '-', htmlspecialchars($order['status']))); ?>"><?php echo htmlspecialchars($order['status']); ?></span>
                     </p>
                     <form action="/mystore/admin/updateOrderStatus" method="POST">
                         <input type="hidden" name="orderId" value="<?php echo $order['orderId']; ?>">
                         <div class="mb-3">
                             <label for="status" class="form-label">Thay đổi trạng thái:</label>
                             <select name="status" id="status" class="form-select">
-                                <?php foreach ($statusTranslations as $key => $value): ?>
-                                    <option value="<?php echo $key; ?>" <?php echo ($key == $currentStatusKey) ? 'selected' : ''; ?>>
-                                        <?php echo $value; ?>
+                                <?php 
+                                $statuses = ['Chờ xử lý', 'Đang xử lý', 'Đang giao hàng', 'Đã giao', 'Đã hủy'];
+                                foreach ($statuses as $status): 
+                                ?>
+                                    <option value="<?php echo $status; ?>" <?php echo ($order['status'] == $status) ? 'selected' : ''; ?>>
+                                        <?php echo $status; ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>

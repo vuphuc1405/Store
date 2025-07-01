@@ -69,32 +69,58 @@ class CartController extends Controller {
     }
 
     public function update() {
-        if (!$this->isLoggedIn()) {
-            $this->redirect('/mystore/login');
-            return;
-        }
-        
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->redirect('/mystore/cart');
-            return;
-        }
-        
-        $cartId = $_POST['cartId'] ?? 0;
-        $quantity = $_POST['quantity'] ?? 1;
-
-        if ($quantity < 1) {
-            $quantity = 1;
-        }
-        
-        $cartModel = $this->loadModel('Cart');
-        if ($cartModel->updateQuantity($cartId, $quantity)) {
-            $_SESSION['success'] = 'Cập nhật giỏ hàng thành công';
-        } else {
-            $_SESSION['error'] = 'Có lỗi xảy ra khi cập nhật';
-        }
-        
-        $this->redirect($_SERVER['HTTP_REFERER'] ?? '/mystore/cart');
+    if (!$this->isLoggedIn()) {
+        $this->redirect('/mystore/login');
+        return;
     }
+    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        $this->redirect('/mystore/cart');
+        return;
+    }
+    
+    $cartId = $_POST['cartId'] ?? 0;
+    $quantity = (int)($_POST['quantity'] ?? 1);
+
+    if ($quantity < 1) {
+        $quantity = 1;
+    }
+    
+    $cartModel = $this->loadModel('Cart');
+    $cartItem = $cartModel->getById($cartId);
+
+    // Kiểm tra xem sản phẩm trong giỏ có thuộc về người dùng hiện tại không
+    if (!$cartItem || $cartItem['userId'] != $_SESSION['user_id']) {
+        $_SESSION['error'] = 'Yêu cầu không hợp lệ.';
+        $this->redirect('/mystore/cart');
+        return;
+    }
+    
+    // === BẮT ĐẦU LOGIC KIỂM TRA TỒN KHO ===
+    $productModel = $this->loadModel('Product');
+    $product = $productModel->getById($cartItem['productId']);
+
+    if (!$product) {
+        $_SESSION['error'] = 'Sản phẩm không còn tồn tại.';
+        $this->redirect('/mystore/cart');
+        return;
+    }
+
+    if ($quantity > $product['stock_quantity']) {
+        $_SESSION['error'] = 'Số lượng tồn kho không đủ!';
+        $this->redirect($_SERVER['HTTP_REFERER'] ?? '/mystore/cart');
+        return;
+    }
+    // === KẾT THÚC LOGIC KIỂM TRA TỒN KHO ===
+    
+    if ($cartModel->updateQuantity($cartId, $quantity)) {
+        $_SESSION['success'] = 'Cập nhật giỏ hàng thành công';
+    } else {
+        $_SESSION['error'] = 'Có lỗi xảy ra khi cập nhật';
+    }
+    
+    $this->redirect($_SERVER['HTTP_REFERER'] ?? '/mystore/cart');
+}
 
     public function remove() {
         if (!$this->isLoggedIn()) {
